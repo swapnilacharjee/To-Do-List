@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome ToDo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #34495e;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #34495e;
+            transition: 0.3s;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #todoInput {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #subtaskInput {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #todoInput:focus, #subtaskInput:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .add-subtask-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .add-subtask-btn:hover {
+            background: #229954;
+        }
+
+        .subtask-list {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .subtask-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .remove-subtask {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        #addBtn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        #addBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .todo-list {
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .todo-item {
+            padding: 18px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-left: 4px solid #667eea;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .todo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .todo-item.completed {
+            opacity: 0.7;
+            border-left-color: #27ae60;
+            background: #f8f9fa;
+        }
+
+        .todo-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .todo-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-left: 10px;
+        }
+
+        .todo-item.completed .todo-title {
+            text-decoration: line-through;
+            color: #718096;
+        }
+
+        .todo-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .todo-buttons {
+            display: none;
+            gap: 5px;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #ffa726, #ff7043);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 167, 38, 0.4);
+        }
+
+        .edit-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .subtasks {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        .subtask {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+
+        .subtask-text {
+            margin-left: 10px;
+            color: #34495e;
+        }
+
+        .subtask.completed .subtask-text {
+            text-decoration: line-through;
+            color: #718096;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .stats {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e5e9;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .clear-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: #229954;
+        }
+
+        .clear-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .priority-btn {
+            padding: 5px 10px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .priority-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .priority-high { border-left-color: #ff6b6b !important; }
+        .priority-medium { border-left-color: #ffa726 !important; }
+        .priority-low { border-left-color: #10ac84 !important; }
+
+        .search-container {
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-buttons {
+            display: none;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #10ac84, #00d2d3);
+            transition: width 0.3s ease;
+        }
+
+        .task-count {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+            display: none;
+        }
+
+        .delete-all-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            margin-left: 10px;
+        }
+
+        .delete-all-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .delete-all-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .danger-zone {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .danger-zone h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .danger-zone p {
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }llowed;
+        }
+
+        .modal {
+            display: none !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-btn.confirm {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #cbd5e0;
+            color: #4a5568;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .modal input.error {
+            border-color: #e53e3e;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 50px;
+                transition: left 0.3s;
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">Awesome ToDo</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="todo-app.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>My Todo List</h1>
+            <p>Stay organized and productive</p>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-container">
+                <input type="text" id="todoInput" placeholder="Enter task title..." maxlength="100">
+                <div class="priority-selector">
+                    <span style="font-size: 14px; color: #6c757d; margin-right: 10px;">Priority:</span>
+                    <button class="priority-btn active" data-priority="low">Low</button>
+                    <button class="priority-btn" data-priority="medium">Medium</button>
+                    <button class="priority-btn" data-priority="high">High</button>
+                </div>
+                <input type="text" id="subtaskInput" placeholder="Add subtask..." maxlength="100">
+                <button class="add-subtask-btn" id="addSubtaskBtn">Add Subtask</button>
+                <div class="subtask-list" id="subtaskList"></div>
+                <button id="addBtn">Add Task</button>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search tasks...">
+        </div>
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+            <button class="filter-btn" data-filter="high">High Priority</button>
+        </div>
+        
+        <div class="task-count" id="taskCount">0 tasks</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="todo-list" id="todoList">
+            <div class="empty-state">
+                No tasks yet. Add one above to get started!
+            </div>
+        </div>
+        
+        <div class="stats">
+            <span id="stats">0 tasks remaining</span>
+            <div>
+                <button class="clear-btn" id="clearBtn" disabled>Clear Completed</button>
+                <button class="delete-all-btn" id="deleteAllBtn" disabled>Delete All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>Delete Task</h3>
+            <p>Enter password to delete this task:</p>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <div id="deleteError" class="error-message">Wrong password. Please try again.</div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="confirmDelete()">Delete</button>
+                <button class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Completed Modal -->
+    <div id="clearModal" class="modal">
+        <div class="modal-content">
+            <h3>Clear Completed Tasks</h3>
+            <p>Enter password to clear all completed tasks:</p>
+            <input type="password" id="clearPasswordInput" placeholder="Enter password">
+            <div id="clearError" class="error-message">Wrong password. Please try again.</div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="confirmClearCompleted()">Clear</button>
+                <button class="modal-btn cancel" onclick="closeClearModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Modal -->
+    <div id="deleteAllModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #e74c3c;">⚠️ Delete All Tasks</h3>
+            <p>This will permanently delete ALL tasks and cannot be undone!</p>
+            <p>Enter password to confirm:</p>
+            <input type="password" id="deleteAllPasswordInput" placeholder="Enter password">
+            <div id="deleteAllError" class="error-message">Wrong password. Please try again.</div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="confirmDeleteAll()">Delete All</button>
+                <button class="modal-btn cancel" onclick="closeDeleteAllModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let currentSubtasks = [];
+        let deleteIndex = null;
+        let currentPriority = 'low';
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        function addTodo() {
+            const title = document.getElementById('todoInput').value.trim();
+            if (title) {
+                todos.unshift({
+                    title: title,
+                    subtasks: [...currentSubtasks],
+                    completed: false,
+                    priority: currentPriority,
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('todoInput').value = '';
+                currentSubtasks = [];
+                currentPriority = 'low';
+                updatePriorityButtons();
+                renderSubtasks();
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        function addSubtask() {
+            const text = document.getElementById('subtaskInput').value.trim();
+            if (text) {
+                currentSubtasks.push({ text: text, completed: false });
+                document.getElementById('subtaskInput').value = '';
+                renderSubtasks();
+            }
+        }
+
+        function removeSubtask(index) {
+            currentSubtasks.splice(index, 1);
+            renderSubtasks();
+        }
+
+        function renderSubtasks() {
+            const subtaskList = document.getElementById('subtaskList');
+            if (currentSubtasks.length === 0) {
+                subtaskList.innerHTML = '';
+            } else {
+                subtaskList.innerHTML = currentSubtasks.map((subtask, index) => `
+                    <div class="subtask-item">
+                        <span>${subtask.text}</span>
+                        <button class="remove-subtask" onclick="removeSubtask(${index})">×</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleTodo(index) {
+            todos[index].completed = !todos[index].completed;
+            if (todos[index].subtasks) {
+                todos[index].subtasks.forEach(subtask => {
+                    subtask.completed = todos[index].completed;
+                });
+            }
+            saveTodos();
+            renderTodos();
+        }
+
+        function toggleSubtask(todoIndex, subtaskIndex) {
+            todos[todoIndex].subtasks[subtaskIndex].completed = !todos[todoIndex].subtasks[subtaskIndex].completed;
+            saveTodos();
+            renderTodos();
+        }
+
+        function showDeleteModal(index) {
+            deleteIndex = index;
+            document.getElementById('deleteModal').style.display = 'block';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function filterTodos() {
+            return todos.filter(todo => {
+                const matchesSearch = todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (todo.subtasks && todo.subtasks.some(sub => sub.text.toLowerCase().includes(searchTerm.toLowerCase())));
+                
+                const matchesFilter = 
+                    currentFilter === 'all' ||
+                    (currentFilter === 'active' && !todo.completed) ||
+                    (currentFilter === 'completed' && todo.completed) ||
+                    (currentFilter === 'high' && todo.priority === 'high');
+                
+                return matchesSearch && matchesFilter;
+            });
+        }
+        
+        function updateProgress() {
+            const totalTasks = todos.length;
+            const completedTasks = todos.filter(todo => todo.completed).length;
+            const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('taskCount').textContent = `${totalTasks} tasks (${completedTasks} completed)`;
+        }
+        
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            const filteredTodos = filterTodos();
+            
+            if (filteredTodos.length === 0) {
+                todoList.innerHTML = '<div class="empty-state">No tasks match your current filter.</div>';
+            } else {
+                todoList.innerHTML = filteredTodos.map((todo, filteredIndex) => {
+                    const originalIndex = todos.indexOf(todo);
+                    return `
+                    <div class="todo-item ${todo.completed ? 'completed' : ''} priority-${todo.priority || 'low'}">
+                        <div class="todo-header">
+                            <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${originalIndex})">
+                            <span class="todo-title">${todo.title}</span>
+                            <span class="priority-badge" style="font-size: 10px; padding: 2px 6px; border-radius: 3px; background: ${getPriorityColor(todo.priority || 'low')}; color: white; margin-left: 8px;">${(todo.priority || 'low').toUpperCase()}</span>
+                            <div class="todo-buttons">
+                                <button class="edit-btn" onclick="editTodo(${originalIndex})" ${todo.completed ? 'disabled' : ''}>Edit</button>
+                                <button class="delete-btn" onclick="showDeleteModal(${originalIndex})">Delete</button>
+                            </div>
+                        </div>
+                        ${todo.subtasks && todo.subtasks.length > 0 ? `
+                            <div class="subtasks">
+                                ${todo.subtasks.map((subtask, subIndex) => `
+                                    <div class="subtask ${subtask.completed ? 'completed' : ''}">
+                                        <input type="checkbox" class="todo-checkbox" ${subtask.completed ? 'checked' : ''} onchange="toggleSubtask(${originalIndex}, ${subIndex})">
+                                        <span class="subtask-text">${subtask.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                }).join('');
+            }
+            updateStats();
+            updateProgress();
+        }
+        
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'high': return '#ff6b6b';
+                case 'medium': return '#ffa726';
+                case 'low': return '#10ac84';
+                default: return '#10ac84';
+            }
+        }
+        
+        function updatePriorityButtons() {
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.priority === currentPriority);
+            });
+        }
+
+        function editTodo(index) {
+            if (todos[index].completed) return;
+            const newTitle = prompt('Edit task title:', todos[index].title);
+            if (newTitle && newTitle.trim()) {
+                todos[index].title = newTitle.trim();
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        function updateStats() {
+            const remaining = todos.filter(todo => !todo.completed).length;
+            const completed = todos.filter(todo => todo.completed).length;
+            document.getElementById('stats').textContent = `${remaining} tasks remaining`;
+            document.getElementById('clearBtn').disabled = completed === 0;
+            document.getElementById('deleteAllBtn').disabled = todos.length === 0;
+        }
+
+        function confirmDelete() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('deleteError');
+            
+            if (passwordInput.value === 'swapnil') {
+                todos.splice(deleteIndex, 1);
+                saveTodos();
+                renderTodos();
+                closeDeleteModal();
+            } else {
+                passwordInput.classList.add('error');
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => {
+                    passwordInput.classList.remove('error');
+                }, 300);
+            }
+        }
+
+        function closeDeleteModal() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('deleteError');
+            
+            document.getElementById('deleteModal').style.display = 'none';
+            passwordInput.value = '';
+            passwordInput.classList.remove('error');
+            errorMsg.style.display = 'none';
+            deleteIndex = null;
+        }
+
+        function confirmClearCompleted() {
+            const passwordInput = document.getElementById('clearPasswordInput');
+            const errorMsg = document.getElementById('clearError');
+            
+            if (passwordInput.value === 'swapnil') {
+                todos = todos.filter(todo => !todo.completed);
+                saveTodos();
+                renderTodos();
+                closeClearModal();
+            } else {
+                passwordInput.classList.add('error');
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => {
+                    passwordInput.classList.remove('error');
+                }, 300);
+            }
+        }
+
+        function closeClearModal() {
+            const passwordInput = document.getElementById('clearPasswordInput');
+            const errorMsg = document.getElementById('clearError');
+            
+            document.getElementById('clearModal').style.display = 'none';
+            passwordInput.value = '';
+            passwordInput.classList.remove('error');
+            errorMsg.style.display = 'none';
+        }
+        
+        function showDeleteAllModal() {
+            document.getElementById('deleteAllModal').style.display = 'block';
+            document.getElementById('deleteAllPasswordInput').focus();
+        }
+        
+        function confirmDeleteAll() {
+            const passwordInput = document.getElementById('deleteAllPasswordInput');
+            const errorMsg = document.getElementById('deleteAllError');
+            
+            if (passwordInput.value === 'swapnil') {
+                todos = [];
+                saveTodos();
+                renderTodos();
+                closeDeleteAllModal();
+            } else {
+                passwordInput.classList.add('error');
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => {
+                    passwordInput.classList.remove('error');
+                }, 300);
+            }
+        }
+        
+        function closeDeleteAllModal() {
+            const passwordInput = document.getElementById('deleteAllPasswordInput');
+            const errorMsg = document.getElementById('deleteAllError');
+            
+            document.getElementById('deleteAllModal').style.display = 'none';
+            passwordInput.value = '';
+            passwordInput.classList.remove('error');
+            errorMsg.style.display = 'none';
+        }
+
+        // Event listeners
+        document.getElementById('addBtn').addEventListener('click', addTodo);
+        document.getElementById('todoInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        document.getElementById('addSubtaskBtn').addEventListener('click', addSubtask);
+        document.getElementById('subtaskInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addSubtask();
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (todos.some(todo => todo.completed)) {
+                document.getElementById('clearModal').style.display = 'block';
+                document.getElementById('clearPasswordInput').focus();
+            }
+        });
+        
+        document.getElementById('deleteAllBtn').addEventListener('click', () => {
+            if (todos.length > 0) {
+                showDeleteAllModal();
+            }
+        });
+
+        document.getElementById('hamburger').addEventListener('click', () => {
+            document.getElementById('hamburger').classList.toggle('active');
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+        
+        // Priority selection
+        document.querySelectorAll('.priority-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentPriority = btn.dataset.priority;
+                updatePriorityButtons();
+            });
+        });
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            renderTodos();
+        });
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderTodos();
+            });
+        });
+
+        // Load todos on page load
+        renderTodos();
+        updatePriorityButtons();
+    </script>
+</body>
+</html>
